@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +40,11 @@ public class RouteService {
 		List<Route> allRoutes=routeRepository.findAll();
 		if(allRoutes.size()>0)
 		{
-			return response.send("following routes found", allRoutes, HttpStatus.FOUND);
+			return response.send("following routes found", allRoutes, HttpStatus.OK);
 		}
 		else
 		{
-			return response.send("no routes found", null, HttpStatus.NOT_FOUND);
+			return response.send("no routes found", allRoutes, HttpStatus.OK);
 		}
 	}
 	
@@ -53,7 +54,7 @@ public class RouteService {
 		Optional<Route> existingRoute=routeRepository.findById(routeId);
 		if(existingRoute.isPresent())
 		{
-			return response.send("route by id " + routeId + "is found", existingRoute, HttpStatus.FOUND);
+			return response.send("route by id " + routeId + "is found", existingRoute.get(), HttpStatus.OK);
 		}
 		else
 		{
@@ -68,12 +69,18 @@ public class RouteService {
 		Optional<Route> existingRoute=routeRepository.findById(routeId);
 		if(existingRoute.isPresent())
 		{
-			routeRepository.deleteById(routeId);
-			return response.send("route by id " + routeId + "is deleted", existingRoute, HttpStatus.OK);
+			try {
+				routeRepository.deleteById(routeId);
+				return response.send("route by id " + routeId + " is deleted", existingRoute.get(), HttpStatus.OK);
+			}
+			catch(DataIntegrityViolationException exception)
+			{
+				return response.send("Route cannot be deleted because it is connected with vehicle, booking, feedback, report, or traffic data", existingRoute.get(), HttpStatus.BAD_REQUEST);
+			}
 		}
 		else
 		{
-			return response.send("no route found by id" + routeId , null, HttpStatus.NOT_FOUND);
+			return response.send("no route found by id " + routeId , null, HttpStatus.NOT_FOUND);
 		}
 	}
 	
@@ -140,8 +147,30 @@ public class RouteService {
 		}
 	}
 
+	public ResponseEntity<ResponseWrapper> getRouteSuggestions(String field, String query)
+	{
+		List<String> suggestions;
+		String searchText = query == null ? "" : query.trim();
 
-	
+		if(field.equalsIgnoreCase("destination"))
+		{
+			suggestions = routeRepository.findDestinationSuggestions(searchText);
+		}
+		else
+		{
+			suggestions = routeRepository.findSourceSuggestions(searchText);
+		}
+
+		if(suggestions.size() > 0)
+		{
+			return response.send("Suggestions found", suggestions, HttpStatus.OK);
+		}
+		else
+		{
+			return response.send("No such " + field + " exists", suggestions, HttpStatus.OK);
+		}
+	}
+
 	public ResponseEntity<ResponseWrapper> getRoutesBySource(String source)
 	{
 		List<Route> routesBySource=routeRepository.findBySource(source);

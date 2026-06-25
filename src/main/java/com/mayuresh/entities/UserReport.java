@@ -40,6 +40,10 @@ public class UserReport {
     @JoinColumn(name = "route_id")
     private Route route;
 
+    @ManyToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
 
     // Report lifecycle
     @Enumerated(EnumType.STRING)

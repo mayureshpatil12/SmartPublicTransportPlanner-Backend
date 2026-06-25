@@ -1,8 +1,11 @@
 package com.mayuresh.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,18 +22,25 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
 
+    // when booking was made
     @Column(nullable = false)
     private LocalDateTime bookingTime;
 
     @Column(nullable = false)
     private double fare;
 
+    private LocalDate tripDate;
+
     // PENDING, CONFIRMED, CANCELLED, COMPLETED
     @Column(nullable = false)
     private String status;
-    
-    @Column(nullable = false)
-    private long seat;
+
+    private double cancellationCharge;
+
+    private double refundAmount;
+
+    @ElementCollection
+    private List<Integer> seats;
 
     // 🔗 Many Bookings -> One User
     @ManyToOne

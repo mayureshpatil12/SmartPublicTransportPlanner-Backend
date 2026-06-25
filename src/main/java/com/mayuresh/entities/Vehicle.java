@@ -1,8 +1,10 @@
 package com.mayuresh.entities;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,6 +29,7 @@ public class Vehicle {
 	    @Column(nullable = false)
 	    private String vehicleName;
 
+	    // Examples:
 	    // AC, NON_AC, SLEEPER, SEMI_SLEEPER, LUXURY
 	    @Column(nullable = false)
 	    private String vehicleType;
@@ -34,9 +37,20 @@ public class Vehicle {
 	    @Column(nullable = false)
 	    private int capacity;
 
+	    @Column(nullable = false)
+	    private double fare;
+
+	    @Column(nullable = false)
+	    private String source;
+
+	    @Column(nullable = false)
+	    private String destination;
+
 	    // ACTIVE, INACTIVE, MAINTENANCE
 	    @Column(nullable = false)
 	    private String status;
+
+	    private LocalDate tripDate;
 
 	    // 🔗 Many Vehicles -> One Route
 	    @ManyToOne
@@ -46,6 +60,7 @@ public class Vehicle {
 	    private Route route;
 
 	    // 🔗 One Vehicle -> Many Bookings
+	    @JsonIgnore
 	    @OneToMany(mappedBy = "vehicle")
 	    private List<Booking> bookings;
 	    

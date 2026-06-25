@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 
@@ -12,6 +14,7 @@ import lombok.Data;
 @Data
 public class User {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long userId;
 	
 	@Column(nullable = false)
@@ -25,6 +28,8 @@ public class User {
 	
 	@Column(nullable = false)
 	private String phone;
+
+	private String profileImageName;
 	
 	@Enumerated(EnumType.STRING)
 	private Role role;

@@ -3,6 +3,7 @@ package com.mayuresh.entities;
 import java.time.LocalTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
@@ -51,20 +52,16 @@ public class Route {
 	    private List<Vehicle> vehicles;
 
 	    // One Route -> Many Bookings
+	    @JsonIgnore
 	    @OneToMany(mappedBy = "route")
 	    private List<Booking> bookings;
 
-	    // One Route -> Many Feedbacks
-	    @OneToMany(mappedBy = "route")
-	    private List<Feedback> feedbacks;
 
 	    // One Route -> Many Reports
+	    @JsonIgnore
 	    @OneToMany(mappedBy = "route")
 	    private List<UserReport> reports;
 
-	    // One Route -> Many Traffic Records
-	    @OneToMany(mappedBy = "route")
-	    private List<TrafficData> trafficData;
 	    
 	    
     
